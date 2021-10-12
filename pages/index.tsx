@@ -6,11 +6,20 @@ import Link from 'next/link'
 import Date from '../components/date'
 import { GetStaticProps } from 'next'
 
+import { gql } from '@apollo/client'
+import client from '../apollo-client'
+
+
 export default function Home({ allPostsData }: {
+  // allPostsData: {
+  //   date: string,
+  //   title: string,
+  //   id: string
+  // }[]
   allPostsData: {
-    date: string,
-    title: string,
-    id: string
+    code: string,
+    name: string,
+    emoji: string
   }[]
 }) {
   return (
@@ -28,14 +37,16 @@ export default function Home({ allPostsData }: {
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, date, title }) => (
-            <li className={utilStyles.listItem} key={id}>
-              <Link href={`/posts/${id}`}>
-                <a>{title}</a>
+          {/* {allPostsData.map(({ id, date, title }) => ( */}
+          {allPostsData.map(({ code, emoji, name }) => (
+            <li className={utilStyles.listItem} key={code}>
+              <Link href={`/posts/${code}`}>
+                <a>{name}</a>
               </Link>
               <br />
               <small className={utilStyles.lightText}>
-                <Date dateString={date} />
+                {/* <Date dateString={date} /> */}
+                {emoji}
               </small>
             </li>
           ))}
@@ -45,12 +56,37 @@ export default function Home({ allPostsData }: {
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => {
 
-  const allPostsData = getSortedPostsData()
+export async function getStaticProps() {
+  const { data } = await client.query({
+    query: gql`
+      query Countries {
+        countries {
+          code
+          name
+          emoji
+        }
+      }
+    `,
+  });
+
   return {
     props: {
-      allPostsData
-    }
-  }
+      allPostsData: data.countries.slice(0, 4),
+    },
+  };
 }
+
+
+
+// Original code to get data from local
+
+// export const getStaticProps: GetStaticProps = async () => {
+
+//   const allPostsData = getSortedPostsData()
+//   return {
+//     props: {
+//       allPostsData
+//     }
+//   }
+// }
