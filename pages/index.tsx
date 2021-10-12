@@ -10,6 +10,10 @@ import { gql } from '@apollo/client'
 import client from '../apollo-client'
 
 
+import ClientOnly from '../components/ClientOnly'
+import Posts from '../components/Posts'
+
+
 export default function Home({ allPostsData }: {
   allPostsData: {
     post_date: string,
@@ -32,9 +36,15 @@ export default function Home({ allPostsData }: {
       </section>
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
-        <ul className={utilStyles.list}>
+
+        <ClientOnly>
+          <Posts/>
+        </ClientOnly>
+
+        {/* <ul className={utilStyles.list}> */}
+          
           {/* {allPostsData.map(({ id, date, title }) => ( */}
-          {allPostsData.map(({ post_title, post_date, post_id, post_description }) => (
+          {/* {allPostsData.map(({ post_title, post_date, post_id, post_description }) => (
             <li className={utilStyles.listItem} key={post_id}>
               <Link href={`/posts/${post_id}`}>
                 <a>{post_title}</a>
@@ -45,8 +55,8 @@ export default function Home({ allPostsData }: {
               </small>
               <>{post_description}</>
             </li>
-          ))}
-        </ul>
+          ))} */}
+        {/* </ul> */}
       </section>
     </Layout>
   )
@@ -54,26 +64,26 @@ export default function Home({ allPostsData }: {
 
 
 // export async function getStaticProps() {
-export async function getServerSideProps() {
-  const { data } = await client.query({
-    query: gql`
-    query MyQuery {
-      posts {
-        post_id
-        post_title
-        post_description
-        post_date
-      }
-    }
-    `,
-  });
+// export async function getServerSideProps() {
+//   const { data } = await client.query({
+//     query: gql`
+//     query MyQuery {
+//       posts {
+//         post_id
+//         post_title
+//         post_description
+//         post_date
+//       }
+//     }
+//     `,
+//   });
 
-  return {
-    props: {
-      allPostsData: data.posts,
-    },
-  };
-}
+//   return {
+//     props: {
+//       allPostsData: data.posts,
+//     },
+//   };
+// }
 
 
 
