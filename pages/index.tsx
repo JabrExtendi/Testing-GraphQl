@@ -11,15 +11,11 @@ import client from '../apollo-client'
 
 
 export default function Home({ allPostsData }: {
-  // allPostsData: {
-  //   date: string,
-  //   title: string,
-  //   id: string
-  // }[]
   allPostsData: {
-    code: string,
-    name: string,
-    emoji: string
+    post_date: string,
+    post_title: string,
+    post_id: string,
+    post_description: string
   }[]
 }) {
   return (
@@ -38,16 +34,16 @@ export default function Home({ allPostsData }: {
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
           {/* {allPostsData.map(({ id, date, title }) => ( */}
-          {allPostsData.map(({ code, emoji, name }) => (
-            <li className={utilStyles.listItem} key={code}>
-              <Link href={`/posts/${code}`}>
-                <a>{name}</a>
+          {allPostsData.map(({ post_title, post_date, post_id, post_description }) => (
+            <li className={utilStyles.listItem} key={post_id}>
+              <Link href={`/posts/${post_id}`}>
+                <a>{post_title}</a>
               </Link>
               <br />
               <small className={utilStyles.lightText}>
-                {/* <Date dateString={date} /> */}
-                {emoji}
+                <Date dateString={post_date} />
               </small>
+              <>{post_description}</>
             </li>
           ))}
         </ul>
@@ -57,22 +53,24 @@ export default function Home({ allPostsData }: {
 }
 
 
-export async function getStaticProps() {
+// export async function getStaticProps() {
+export async function getServerSideProps() {
   const { data } = await client.query({
     query: gql`
-      query Countries {
-        countries {
-          code
-          name
-          emoji
-        }
+    query MyQuery {
+      posts {
+        post_id
+        post_title
+        post_description
+        post_date
       }
+    }
     `,
   });
 
   return {
     props: {
-      allPostsData: data.countries.slice(0, 4),
+      allPostsData: data.posts,
     },
   };
 }
