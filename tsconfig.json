@@ -22,7 +22,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "components/ClientOnly.js"  ],
+, "components/ClientOnly.tsx"  ],
   "exclude": [
     "node_modules"
   ]

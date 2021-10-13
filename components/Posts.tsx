@@ -41,7 +41,7 @@ export default function Posts() {
                     <small className={utilStyles.lightText}>
                         <Date dateString={post_date} />
                     </small>
-                    <>{post_description}</>
+                    <div className="bg-red-500">{post_description}</div>
                 </li>
             ))}
         </div>
