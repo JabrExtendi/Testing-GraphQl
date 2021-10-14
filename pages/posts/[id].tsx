@@ -1,46 +1,79 @@
 import Layout from '../../components/layout'
-import { getAllPostIds, getPostData } from '../../lib/posts'
 import Head from 'next/head'
 import Date from '../../components/date'
 import utilStyles from '../../styles/utils.module.css'
-import { GetStaticPaths, GetStaticProps } from 'next'
 
-export default function Post({ postData }: {
-  postData: {
-    title: string,
-    date: string,
-    contentHtml: string
+import { useRouter } from 'next/router'
+
+
+
+import { gql, useQuery } from '@apollo/client'
+import type { Posts } from '../../components/Posts'
+
+
+export function getPostById(id) {
+
+
+  
+
+}
+
+
+export default function Post() {
+
+  const router = useRouter()
+  const {id} = router.query
+  console.log("id is: ", id)
+
+
+  const QUERY = gql`
+  query ($requiredPostId: Int!){
+    posts_by_pk(post_id: $requiredPostId) {
+      post_title
+      post_description
+      post_date
+      post_id
+    }
   }
-}) {
+`;
+
+  const requiredPostId = id
+  const { data, loading, error } = useQuery<any>(QUERY, {
+    variables: {requiredPostId}
+  });
+
+  if (loading) {
+
+    return <div>Loading...</div>;
+
+  }
+
+  if (error) {
+
+    console.error(error);
+
+    return <div>Error!</div>;
+
+  }
+
+
+  console.log("Data is :",data)
+  console.log("Data is :",data.posts_by_pk)
+
+  const postData = data.posts_by_pk
+
   return (
     <Layout>
       <Head>
-        <title>{postData.title}</title>
+        <title>{postData.post_title}</title>
       </Head>
       <article>
-        <h1 className={utilStyles.headingXl}>{postData.title}</h1>
+        <h1 className={utilStyles.headingXl}>{postData.post_title} : id = {postData.post_id}</h1>
         <div className={utilStyles.lightText}>
-          <Date dateString={postData.date} />
+          <Date dateString={postData.post_date} />
         </div>
-        <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
+        <div dangerouslySetInnerHTML={{ __html: postData.post_description }} />
       </article>
     </Layout>
   )
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = getAllPostIds()
-  return {
-    paths,
-    fallback: false
-  }
-}
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const postData = await getPostData(params.id as string)
-  return {
-    props: {
-      postData
-    }
-  }
 }

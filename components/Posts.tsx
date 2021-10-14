@@ -4,14 +4,14 @@ import Link from 'next/link'
 import Date from '../components/date'
 
 
-type Post = {
+export type Post = {
     post_id: number;
     post_date: string;
     post_title: string;
     post_description: string
 }
 
-type Posts = {
+export type Posts = {
    posts : Post[];
 }
 
@@ -42,6 +42,14 @@ export default function Posts() {
 
     const posts = data.posts
 
+    const deletePost = (Id) => {
+
+    }
+
+    const editPost = (Id) => {
+
+    }
+
     return (
         <div className={utilStyles.list}>
             {posts.map(({ post_title, post_date, post_id, post_description }) => (
@@ -53,6 +61,15 @@ export default function Posts() {
                     <small className={utilStyles.lightText}>
                         <Date dateString={post_date} />
                     </small>
+                    <br />
+                    <button onClick={() => {
+                        console.log(`Clicked on delete button for post: ${post_title}; ${post_id}`)
+                        deletePost(post_id) 
+                    }}> Delete Below Post</button>
+                    <button onClick={() => {
+                        console.log(`Clicked on edit button for post: ${post_title}; ${post_id}`)
+                        editPost(post_id) 
+                    }}> Edit Below Post</button>
                     <div className="bg-red-500">{post_description}</div>
                 </li>
             ))}
