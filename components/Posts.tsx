@@ -1,4 +1,4 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import utilStyles from '../styles/utils.module.css'
 import Link from 'next/link'
 import Date from '../components/date'
@@ -12,23 +12,100 @@ export type Post = {
 }
 
 export type Posts = {
-   posts : Post[];
+    posts: Post[];
 }
 
+function EditPost({ PostId }) {
+    const EditPostMutation = gql`mutation UpdatePost ($PostId: Int!) {
+        update_posts_by_pk(pk_columns: {post_id: $PostId},
+          _set: {post_date: "2021-11-28",
+            post_description: "updated description",
+            post_title: "Really updated Title"}) {
+          post_date
+          post_description
+          post_id
+          post_title
+        }
+    }`
 
-const QUERY = gql`
-query MyQuery {
-  posts {
-    post_id
-    post_title
-    post_description
-    post_date
-  }
+    const [mutateFunction, { data, loading, error }] = useMutation(EditPostMutation);
+
+    if (loading) return <>'Submitting...'</>;
+    if (error) return <>`Submission error! ${error.message}`</>;
+
+    return (
+        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500"  onClick={() => {
+
+            console.log(PostId)
+            mutateFunction({ variables: { PostId: PostId } })
+        }}>Update Below Post</button>
+    )
+
 }
-`;
+
+function DeletePost({ PostId }) {
+    const DeletePostMutation = gql`mutation DeletePost ($PostId: Int!)  {
+        delete_posts_by_pk(post_id: $PostId) {
+          post_date
+          post_description
+          post_id
+          post_title
+        }
+    }`
+
+    const [mutateFunction, { data, loading, error }] = useMutation(DeletePostMutation);
+
+    if (loading) return <>'Submitting...'</>;
+    if (error) return <>`Submission error! ${error.message}`</>;
+
+    return (
+        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500"  onClick={() => { mutateFunction({ variables: { PostId: PostId } }) }}>Delete Below Post</button>
+    )
+
+}
+
+function AddPost() {
+    const AddPostMutation = gql`mutation AddPost{
+        insert_posts(objects: [{post_date: "2021-05-07",
+          post_description: "A post to try out the mutation",
+          post_title: "A new title"}]) {
+            returning {
+              post_id
+            post_title
+            post_description
+            post_date
+            }
+        }
+    }`
+
+    const [mutateFunction, { data, loading, error }] = useMutation(AddPostMutation);
+
+    if (loading) return <>'Submitting...'</>;
+    if (error) return <>`Submission error! ${error.message}`</>;
+
+    return (
+        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500"  onClick={() => {
+            console.log()
+            mutateFunction() }}>Add new post</button>
+    )
+
+
+}
+
 
 
 export default function Posts() {
+    const QUERY = gql`
+    query MyQuery {
+        posts {
+            post_id
+            post_title
+            post_description
+            post_date
+        }
+    }
+    `;
+
     const { data, loading, error } = useQuery<Posts>(QUERY);
 
     if (loading) {
@@ -42,14 +119,6 @@ export default function Posts() {
 
     const posts = data.posts
 
-    const deletePost = (Id) => {
-
-    }
-
-    const editPost = (Id) => {
-
-    }
-
     return (
         <div className={utilStyles.list}>
             {posts.map(({ post_title, post_date, post_id, post_description }) => (
@@ -62,17 +131,15 @@ export default function Posts() {
                         <Date dateString={post_date} />
                     </small>
                     <br />
-                    <button onClick={() => {
-                        console.log(`Clicked on delete button for post: ${post_title}; ${post_id}`)
-                        deletePost(post_id) 
-                    }}> Delete Below Post</button>
-                    <button onClick={() => {
-                        console.log(`Clicked on edit button for post: ${post_title}; ${post_id}`)
-                        editPost(post_id) 
-                    }}> Edit Below Post</button>
+                    
+                    <DeletePost  PostId={post_id} />
+                    
+                    <EditPost  PostId={post_id} />
                     <div className="bg-red-500">{post_description}</div>
                 </li>
             ))}
+
+            <AddPost />
         </div>
     )
 
