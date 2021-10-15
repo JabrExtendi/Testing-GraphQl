@@ -15,6 +15,14 @@ export type Posts = {
     posts: Post[];
 }
 
+export type PostByPK = {
+    posts_by_pk: Post
+}
+
+export type PostByPKVariable = {
+    post_id: number
+}
+
 function EditPost({ PostId }) {
     const EditPostMutation = gql`mutation UpdatePost ($PostId: Int!) {
         update_posts_by_pk(pk_columns: {post_id: $PostId},

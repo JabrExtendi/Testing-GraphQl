@@ -1,24 +1,25 @@
 import Layout from '../../components/layout'
 import Head from 'next/head'
-import Date from '../../components/date'
 import utilStyles from '../../styles/utils.module.css'
 
 import { useRouter } from 'next/router'
 
 import { gql, useQuery } from '@apollo/client'
-import type { Posts } from '../../components/Posts'
+import type { PostByPK, Post, Posts, PostByPKVariable } from '../../components/Posts'
 
 
-export default function Post() {
+export default function PostPage() {
 
   const router = useRouter()
   const {id} = router.query
+  console.log(id)
+  const idInt = parseInt(id as string)
   console.log("id is: ", id)
 
 
   const QUERY = gql`
-  query ($requiredPostId: Int!){
-    posts_by_pk(post_id: $requiredPostId) {
+  query ($post_id: Int!){
+    posts_by_pk(post_id: $post_id) {
       post_title
       post_description
       post_date
@@ -27,9 +28,9 @@ export default function Post() {
   }
 `;
 
-  const requiredPostId = id
-  const { data, loading, error } = useQuery<any>(QUERY, {
-    variables: {requiredPostId}
+  const post_id = id
+  const { loading, data, error } = useQuery<PostByPK, PostByPKVariable>(QUERY, {
+    variables: {post_id : idInt}
   });
 
   if (loading) {
@@ -48,11 +49,11 @@ export default function Post() {
 
 
   console.log("Data is :",data)
-  console.log("Data is :",data.posts_by_pk)
 
   const postData = data.posts_by_pk
 
   return (
+    // <>testing</>
     <Layout>
       <Head>
         <title>{postData.post_title}</title>
@@ -60,7 +61,7 @@ export default function Post() {
       <article>
         <h1 className={utilStyles.headingXl}>{postData.post_title} : id = {postData.post_id}</h1>
         <div className={utilStyles.lightText}>
-          <Date dateString={postData.post_date} />
+          <div> {postData.post_date} </div>
         </div>
         <div dangerouslySetInnerHTML={{ __html: postData.post_description }} />
       </article>
