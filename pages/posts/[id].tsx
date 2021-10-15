@@ -5,18 +5,8 @@ import utilStyles from '../../styles/utils.module.css'
 
 import { useRouter } from 'next/router'
 
-
-
 import { gql, useQuery } from '@apollo/client'
 import type { Posts } from '../../components/Posts'
-
-
-export function getPostById(id) {
-
-
-  
-
-}
 
 
 export default function Post() {
