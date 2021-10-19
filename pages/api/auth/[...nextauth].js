@@ -59,7 +59,7 @@ export default NextAuth({
     // if you want to override the default behaviour.
     encode: async ({ secret, token, maxAge }) => {
       const jwtClaimns = {
-        "sub": token.id,
+        "sub": token.id.toString(),
         "name": token.name,
         "email": token.email,
         "iat": Date.now()/1000,
@@ -117,8 +117,10 @@ export default NextAuth({
 
       const isUserSignedIn = user ? true : false;
 
+      // localStorage.setItem('next-0auth.session-token', token)
+
       if(isUserSignedIn) {
-        token.id = user.id
+        token.id = user.id.toString();
       }
       
       return Promise.resolve(token); 
