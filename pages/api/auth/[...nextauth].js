@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
-import Providers from "next-auth/providers"
+import GithubProvider from "next-auth/providers/github"
+import GoogleProvider from "next-auth/providers/google"
 import jwt from 'jsonwebtoken'
 
 // For more information on each option (and a full list of options) go to
@@ -7,16 +8,17 @@ import jwt from 'jsonwebtoken'
 export default NextAuth({
   // https://next-auth.js.org/configuration/providers
   providers: [
-    
-    Providers.GitHub({
+
+    GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
       // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
       scope: "read:user"
     }),
-    Providers.Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
+      authorization: 'https://accounts.google.com/o/oauth2/v2/auth?prompt=consent&access_type=offline&response_type=code',
     })
   ],
   // Database optional. MySQL, Maria DB, Postgres and MongoDB are supported.
@@ -59,26 +61,26 @@ export default NextAuth({
     // if you want to override the default behaviour.
     encode: async ({ secret, token, maxAge }) => {
       const jwtClaimns = {
-        "sub": token.id.toString(),
+        "sub": token.id,
         "name": token.name,
         "email": token.email,
-        "iat": Date.now()/1000,
-        "exp": Math.floor(Date.now()/1000) + (24 * 60 * 60),
+        "iat": Date.now() / 1000,
+        "exp": Math.floor(Date.now() / 1000) + (24 * 60 * 60),
         "https://hasura.io/jwt/claims": {
-          "x-hasura-allowed-roles": [ "user"],
+          "x-hasura-allowed-roles": ["user"],
           "x-hasura-default-role": "user",
           "x-hasura-role": "user",
           "x-hasura-user-id": token.id
         }
       }
 
-      const encodedToken = jwt.sign(jwtClaimns, secret, { algorithm: 'HS256'})
+      const encodedToken = jwt.sign(jwtClaimns, secret, { algorithm: 'HS256' })
 
       return encodedToken;
 
     },
     decode: async ({ secret, token, maxAge }) => {
-      const decodedToken = jwt.verify(token, secret, {algorithms: ["HS256"]});
+      const decodedToken = jwt.verify(token, secret, { algorithms: ["HS256"] });
 
       return decodedToken;
 
@@ -104,27 +106,27 @@ export default NextAuth({
   callbacks: {
     // async signIn(user, account, profile) { return true },
     // async redirect(url, baseUrl) { return baseUrl },
-    async session(session, token) {
-      
-      const encodedToken = jwt.sign(token, process.env.SECRET, { algorithm: 'HS256'})
+    async session({ session, token, user }) {
+
+      const encodedToken = jwt.sign(token, process.env.SECRET, { algorithm: 'HS256' })
 
       session.id = token.id;
-      session.token = encodedToken     
-      
-      return Promise.resolve(session); 
+      session.token = encodedToken
+
+      return Promise.resolve(session);
     },
-    async jwt(token, user, account, profile, isNewUser) { 
+    async jwt({ token, user, account, profile, isNewUser }) {
 
       const isUserSignedIn = user ? true : false;
 
       // localStorage.setItem('next-0auth.session-token', token)
 
-      if(isUserSignedIn) {
-        token.id = user.id.toString();
+      if (isUserSignedIn) {
+        token.id = user.id;
       }
-      
-      return Promise.resolve(token); 
-    
+
+      return Promise.resolve(token);
+
     }
   },
 
@@ -134,7 +136,11 @@ export default NextAuth({
 
   // You can set the theme to 'light', 'dark' or use 'auto' to default to the
   // whatever prefers-color-scheme is set to in the browser. Default is 'auto'
-  theme: 'light',
+  theme: {
+    colorScheme: "light", // "auto" | "dark" | "light"
+    brandColor: "" // Hex color value  
+    // logo: "" // Absolute URL to logo image
+  },
 
   // Enable debug messages in the console if you are having problems
   debug: true,
