@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
 import jwt from 'jsonwebtoken'
+import cookie from 'js-cookie'
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -39,7 +40,7 @@ export default NextAuth({
     // This option can be used with or without a database for users/accounts.
     // Note: `jwt` is automatically set to `true` if no database is specified.
     jwt: true,
-
+    cookieName: "token",
     // Seconds - How long until an idle session expires and is no longer valid.
     // maxAge: 30 * 24 * 60 * 60, // 30 days
 
@@ -76,6 +77,7 @@ export default NextAuth({
 
       const encodedToken = jwt.sign(jwtClaimns, secret, { algorithm: 'HS256' })
 
+
       return encodedToken;
 
     },
@@ -109,6 +111,9 @@ export default NextAuth({
     async session({ session, token, user }) {
 
       const encodedToken = jwt.sign(token, process.env.SECRET, { algorithm: 'HS256' })
+
+      cookie.set('token', encodedToken, {expires: 3})
+      console.log("cookie has been set:" + encodedToken)
 
       session.id = token.id;
       session.token = encodedToken
