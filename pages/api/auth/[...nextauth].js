@@ -1,25 +1,25 @@
-import NextAuth from "next-auth"
-import GithubProvider from "next-auth/providers/github"
-import GoogleProvider from "next-auth/providers/google"
-import jwt from 'jsonwebtoken'
+import NextAuth from 'next-auth';
+import GithubProvider from 'next-auth/providers/github';
+import GoogleProvider from 'next-auth/providers/google';
+import jwt from 'jsonwebtoken';
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default NextAuth({
   // https://next-auth.js.org/configuration/providers
   providers: [
-
     GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
       // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
-      scope: "read:user"
+      scope: 'read:user',
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
-      authorization: 'https://accounts.google.com/o/oauth2/v2/auth?prompt=consent&access_type=offline&response_type=code',
-    })
+      authorization:
+        'https://accounts.google.com/o/oauth2/v2/auth?prompt=consent&access_type=offline&response_type=code',
+    }),
   ],
   // Database optional. MySQL, Maria DB, Postgres and MongoDB are supported.
   // https://next-auth.js.org/configuration/databases
@@ -60,30 +60,27 @@ export default NextAuth({
     // if you want to override the default behaviour.
     encode: async ({ secret, token, maxAge }) => {
       const jwtClaimns = {
-        "sub": token.id,
-        "name": token.name,
-        "email": token.email,
-        "iat": Date.now() / 1000,
-        "exp": Math.floor(Date.now() / 1000) + (24 * 60 * 60),
-        "https://hasura.io/jwt/claims": {
-          "x-hasura-allowed-roles": ["user"],
-          "x-hasura-default-role": "user",
-          "x-hasura-role": "user",
-          "x-hasura-user-id": token.id
-        }
-      }
+        sub: token.id,
+        name: token.name,
+        email: token.email,
+        iat: Date.now() / 1000,
+        exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
+        'https://hasura.io/jwt/claims': {
+          'x-hasura-allowed-roles': ['user'],
+          'x-hasura-default-role': 'user',
+          'x-hasura-role': 'user',
+          'x-hasura-user-id': token.id,
+        },
+      };
 
-      const encodedToken = jwt.sign(jwtClaimns, secret, { algorithm: 'HS256' })
-
+      const encodedToken = jwt.sign(jwtClaimns, secret, { algorithm: 'HS256' });
 
       return encodedToken;
-
     },
     decode: async ({ secret, token, maxAge }) => {
-      const decodedToken = jwt.verify(token, secret, { algorithms: ["HS256"] });
+      const decodedToken = jwt.verify(token, secret, { algorithms: ['HS256'] });
 
       return decodedToken;
-
     },
   },
 
@@ -107,22 +104,24 @@ export default NextAuth({
     // async signIn(user, account, profile) { return true },
     // async redirect(url, baseUrl) { return baseUrl },
     async session({ session, token, user }) {
-
-      const encodedToken = jwt.sign(token, process.env.SECRET, { algorithm: 'HS256' })
+      const encodedToken = jwt.sign(token, process.env.SECRET, {
+        algorithm: 'HS256',
+      });
 
       // cookie.set('token', encodedToken, {expires: 3})
       // console.log("cookie has been set:" + encodedToken)
 
       session.id = token.id;
-      session.token = encodedToken
+      session.token = encodedToken;
 
-      session.finalToken = token.finalToken
+      session.finalToken = token.finalToken;
 
       return Promise.resolve(session);
     },
     async jwt({ token, user, account, profile, isNewUser }) {
-
-      const encodedToken = jwt.sign(token, process.env.SECRET, { algorithm: 'HS256' })
+      const encodedToken = jwt.sign(token, process.env.SECRET, {
+        algorithm: 'HS256',
+      });
 
       const isUserSignedIn = user ? true : false;
 
@@ -130,14 +129,13 @@ export default NextAuth({
         token.id = user.id;
       }
 
-      token.finalToken = encodedToken
+      token.finalToken = encodedToken;
 
-      // console.log("myUser id is: " + JSON.stringify(user)) 
+      // console.log("myUser id is: " + JSON.stringify(user))
       // console.log("my EncodedToken is :" + JSON.stringify(encodedToken))
 
       return Promise.resolve(token);
-
-    }
+    },
   },
 
   // Events are useful for logging
@@ -147,11 +145,11 @@ export default NextAuth({
   // You can set the theme to 'light', 'dark' or use 'auto' to default to the
   // whatever prefers-color-scheme is set to in the browser. Default is 'auto'
   theme: {
-    colorScheme: "light", // "auto" | "dark" | "light"
-    brandColor: "" // Hex color value  
+    colorScheme: 'light', // "auto" | "dark" | "light"
+    brandColor: '', // Hex color value
     // logo: "" // Absolute URL to logo image
   },
 
   // Enable debug messages in the console if you are having problems
   debug: true,
-})
+});
