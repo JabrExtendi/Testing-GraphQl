@@ -40,10 +40,10 @@ function EditPost({ PostId }) {
     }
   `;
 
-  const [mutateFunction, { data, loading, error }] =
+  const [mutateFunction, {  loading, error }] =
     useMutation(EditPostMutation);
 
-  if (loading) return <>'Submitting...'</>;
+  if (loading) return <>{"Submitting..."}</>;
   if (error) return <>`Submission error! ${error.message}`</>;
 
   return (
@@ -73,7 +73,7 @@ function DeletePost({ PostId }) {
 
   const [mutateFunction, { loading, error }] = useMutation(DeletePostMutation);
 
-  if (loading) return <>'Submitting...'</>;
+  if (loading) return <>{"Submitting..."}</>;
   if (error) return <>`Submission error! ${error.message}`</>;
 
   return (
@@ -110,10 +110,10 @@ function AddPost() {
     }
   `;
 
-  const [mutateFunction, { data, loading, error }] =
+  const [mutateFunction, { loading, error }] =
     useMutation(AddPostMutation);
 
-  if (loading) return <>'Submitting...'</>;
+  if (loading) return <>{"Submitting..."}</>;
   if (error) return <>`Submission error! ${error.message}`</>;
 
   return (

@@ -58,7 +58,7 @@ export default NextAuth({
     // encryption: true,
     // You can define your own encode/decode functions for signing and encryption
     // if you want to override the default behaviour.
-    encode: async ({ secret, token, maxAge }) => {
+    encode: async ({ secret, token }) => {
       const jwtClaimns = {
         sub: token.id,
         name: token.name,
@@ -77,7 +77,7 @@ export default NextAuth({
 
       return encodedToken;
     },
-    decode: async ({ secret, token, maxAge }) => {
+    decode: async ({ secret, token }) => {
       const decodedToken = jwt.verify(token, secret, { algorithms: ['HS256'] });
 
       return decodedToken;
@@ -103,7 +103,7 @@ export default NextAuth({
   callbacks: {
     // async signIn(user, account, profile) { return true },
     // async redirect(url, baseUrl) { return baseUrl },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       const encodedToken = jwt.sign(token, process.env.SECRET, {
         algorithm: 'HS256',
       });
@@ -118,7 +118,7 @@ export default NextAuth({
 
       return Promise.resolve(session);
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user}) {
       const encodedToken = jwt.sign(token, process.env.SECRET, {
         algorithm: 'HS256',
       });

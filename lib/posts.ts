@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import type { Posts } from '../components/Posts';
 
-export function getPostById(id) {
+export function getPostById() {
   const QUERY = gql`
     query GetAllIds {
       posts_by_pk(post_id: 1) {
@@ -13,7 +13,7 @@ export function getPostById(id) {
     }
   `;
 
-  const { data, loading, error } = useQuery<Posts>(QUERY);
+  const { data} = useQuery<Posts>(QUERY);
   console.log('Data is :', data);
   return data;
 }
