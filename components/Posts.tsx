@@ -1,18 +1,17 @@
 import { useQuery, gql, useMutation } from "@apollo/client";
 import utilStyles from '../styles/utils.module.css'
 import Link from 'next/link'
-import Date from '../components/date'
 
 
 export type Post = {
-    post_id: number;
-    post_date: string;
-    post_title: string;
-    post_description: string
+    id: number;
+    date: string;
+    title: string;
+    description: string
 }
 
 export type Posts = {
-    posts: Post[];
+    post: Post[];
 }
 
 export type PostByPK = {
@@ -20,19 +19,19 @@ export type PostByPK = {
 }
 
 export type PostByPKVariable = {
-    post_id: number
+    id: number
 }
 
 function EditPost({ PostId }) {
     const EditPostMutation = gql`mutation UpdatePost ($PostId: Int!) {
-        update_posts_by_pk(pk_columns: {post_id: $PostId},
-          _set: {post_date: "2021-11-28",
-            post_description: "updated description",
-            post_title: "Really updated Title"}) {
-          post_date
-          post_description
-          post_id
-          post_title
+        update_post_by_pk(pk_columns: {id: $PostId},
+          _set: {date: "2021-11-28",
+            description: "updated description",
+            title: "Really updated Title"}) {
+          date
+          description
+          id
+          title
         }
     }`
 
@@ -42,7 +41,7 @@ function EditPost({ PostId }) {
     if (error) return <>`Submission error! ${error.message}`</>;
 
     return (
-        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500"  onClick={() => {
+        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500" onClick={() => {
 
             console.log(PostId)
             mutateFunction({ variables: { PostId: PostId } })
@@ -53,35 +52,35 @@ function EditPost({ PostId }) {
 
 function DeletePost({ PostId }) {
     const DeletePostMutation = gql`mutation DeletePost ($PostId: Int!)  {
-        delete_posts_by_pk(post_id: $PostId) {
-          post_date
-          post_description
-          post_id
-          post_title
+        delete_post_by_pk(id: $PostId) {
+          date
+          description
+          id
+          title
         }
     }`
 
-    const [mutateFunction, { data, loading, error }] = useMutation(DeletePostMutation);
+    const [mutateFunction, { loading, error }] = useMutation(DeletePostMutation);
 
     if (loading) return <>'Submitting...'</>;
     if (error) return <>`Submission error! ${error.message}`</>;
 
     return (
-        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500"  onClick={() => { mutateFunction({ variables: { PostId: PostId } }) }}>Delete Below Post</button>
+        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500" onClick={() => { mutateFunction({ variables: { PostId: PostId } }) }}>Delete Below Post</button>
     )
 
 }
 
 function AddPost() {
     const AddPostMutation = gql`mutation AddPost{
-        insert_posts(objects: [{post_date: "2021-05-07",
-          post_description: "A post to try out the mutation",
-          post_title: "A new title"}]) {
+        insert_post(objects: [{date: "2021-05-07",
+          description: "A post to try out the mutation",
+          title: "A new title"}]) {
             returning {
-              post_id
-            post_title
-            post_description
-            post_date
+              id
+            title
+            description
+            date
             }
         }
     }`
@@ -92,9 +91,10 @@ function AddPost() {
     if (error) return <>`Submission error! ${error.message}`</>;
 
     return (
-        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500"  onClick={() => {
+        <button className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500" onClick={() => {
             console.log()
-            mutateFunction() }}>Add new post</button>
+            mutateFunction()
+        }}>Add new post</button>
     )
 
 
@@ -103,13 +103,11 @@ function AddPost() {
 
 
 export default function Posts() {
-    const QUERY = gql`
-    query MyQuery {
-        posts {
-            post_id
-            post_title
-            post_description
-            post_date
+    const QUERY = gql`query MyQuery {
+        post {
+            title
+            description
+            date
         }
     }
     `;
@@ -125,25 +123,27 @@ export default function Posts() {
         return null;
     }
 
-    const posts = data.posts
+    console.log("the data is : " + JSON.stringify(data))
+
+    const posts = data.post
 
     return (
         <div className={utilStyles.list}>
-            {posts.map(({ post_title, post_date, post_id, post_description }) => (
-                <li className={utilStyles.listItem} key={post_id}>
-                    <Link href={`/posts/${post_id}`}>
-                        <a>{post_title}</a>
+            {posts.map(({ title, date, id, description }) => (
+                <li className={utilStyles.listItem} key={id}>
+                    <Link href={`/posts/${id}`}>
+                        <a>{title}</a>
                     </Link>
                     <br />
                     <small className={utilStyles.lightText}>
-                        <Date dateString={post_date} />
+                        {date}
                     </small>
                     <br />
-                    
-                    <DeletePost  PostId={post_id} />
-                    
-                    <EditPost  PostId={post_id} />
-                    <div className="bg-red-500">{post_description}</div>
+
+                    <DeletePost PostId={id} />
+
+                    <EditPost PostId={id} />
+                    <div className="bg-red-500">{description}</div>
                 </li>
             ))}
 

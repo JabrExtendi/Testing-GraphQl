@@ -2,7 +2,6 @@ import NextAuth from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
 import jwt from 'jsonwebtoken'
-import cookie from 'js-cookie'
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -28,7 +27,7 @@ export default NextAuth({
   // Notes:
   // * You must install an appropriate node_module for your database
   // * The Email provider requires a database (OAuth providers do not)
-  // database: process.env.DATABASE_URL,
+  database: process.env.DATABASE_URL,
 
   // The secret should be set to a reasonably long random string.
   // It is used to sign cookies and to sign and encrypt JSON Web Tokens, unless
@@ -40,7 +39,6 @@ export default NextAuth({
     // This option can be used with or without a database for users/accounts.
     // Note: `jwt` is automatically set to `true` if no database is specified.
     jwt: true,
-    cookieName: "token",
     // Seconds - How long until an idle session expires and is no longer valid.
     // maxAge: 30 * 24 * 60 * 60, // 30 days
 
@@ -112,23 +110,30 @@ export default NextAuth({
 
       const encodedToken = jwt.sign(token, process.env.SECRET, { algorithm: 'HS256' })
 
-      cookie.set('token', encodedToken, {expires: 3})
-      console.log("cookie has been set:" + encodedToken)
+      // cookie.set('token', encodedToken, {expires: 3})
+      // console.log("cookie has been set:" + encodedToken)
 
       session.id = token.id;
       session.token = encodedToken
+
+      session.finalToken = token.finalToken
 
       return Promise.resolve(session);
     },
     async jwt({ token, user, account, profile, isNewUser }) {
 
-      const isUserSignedIn = user ? true : false;
+      const encodedToken = jwt.sign(token, process.env.SECRET, { algorithm: 'HS256' })
 
-      // localStorage.setItem('next-0auth.session-token', token)
+      const isUserSignedIn = user ? true : false;
 
       if (isUserSignedIn) {
         token.id = user.id;
       }
+
+      token.finalToken = encodedToken
+
+      // console.log("myUser id is: " + JSON.stringify(user)) 
+      // console.log("my EncodedToken is :" + JSON.stringify(encodedToken))
 
       return Promise.resolve(token);
 

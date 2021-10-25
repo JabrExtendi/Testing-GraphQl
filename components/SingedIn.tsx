@@ -1,8 +1,6 @@
 import utilStyles from '../styles/utils.module.css'
 import { signIn, signOut, useSession } from 'next-auth/react'
 
-
-import ClientOnly from '../components/ClientOnly'
 import Posts from '../components/Posts'
 
 export default function SignedIn() {
@@ -13,6 +11,7 @@ export default function SignedIn() {
     if (status === 'authenticated') {
         return (
             <>
+            {window.localStorage.setItem("testing-token", JSON.stringify(session.token))}
                 <section>
                     {session.user.image && <span style={{ backgroundImage: `url(${session.user.image})` }} />}
                     <span >
@@ -31,9 +30,7 @@ export default function SignedIn() {
                 </section>
                 <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
                     <h2 className={utilStyles.headingLg}>Blog</h2>
-                    <ClientOnly>
                         <Posts />
-                    </ClientOnly>
                 </section>
             </>
         )
