@@ -36,12 +36,9 @@ export default function PostPage() {
     return <div>Error!</div>;
   }
 
-  // console.log("Data is :",data)
-
   const postData = data.posts_by_pk;
 
   return (
-    // <>testing</>
     <Layout>
       <Head>
         <title>{postData.title}</title>
