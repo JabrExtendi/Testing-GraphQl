@@ -50,7 +50,6 @@ function EditPost({ PostId }) {
     <button
       className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500"
       onClick={() => {
-        console.log(PostId);
         mutateFunction({ variables: { PostId: PostId } });
       }}
     >
@@ -120,7 +119,6 @@ function AddPost() {
     <button
       className="inline-block mx-3 bg-red-200 my-2 rounded p-2 hover:bg-red-500"
       onClick={() => {
-        console.log();
         mutateFunction();
       }}
     >
@@ -175,14 +173,14 @@ export default function Posts() {
     return null;
   }
 
-  console.log('the data is : ' + JSON.stringify(data));
+  // console.log('from Posts.txt, the data is : ' + JSON.stringify(data));
 
   const posts = data.post;
 
   return (
     <div className={utilStyles.list}>
       {posts.map(({ title, date, id, description }) => (
-        <li className={utilStyles.listItem} key={id}>
+        <li className={utilStyles.listItem} key={title}>
           <Link href={`/posts/${id}`}>
             <a>{title}</a>
           </Link>

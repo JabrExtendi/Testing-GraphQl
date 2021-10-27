@@ -6,6 +6,9 @@ import {
   ApolloProvider,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import jwt_decode from 'jwt-decode'
+import addUser from '../pages/api/addUser';
+
 
 function createApolloClient(cache: InMemoryCache) {
   const graphql_url = `http://localhost:8080/v1/graphql`;
@@ -13,12 +16,16 @@ function createApolloClient(cache: InMemoryCache) {
   const httpLink = createHttpLink({
     uri: graphql_url,
   });
+  
 
   const authorizationHeaderLink = setContext(async (_, { headers }) => {
     const token = await fetch('/api/getToken');
     const body = await token.json();
     const jwt = body['jwt'];
-    console.log('token', body['jwt']);
+    const decoded = jwt_decode(jwt)
+    addUser(decoded)
+    // console.log("Token from CAC: " +JSON.stringify(decoded))
+    // console.log('from CustomApolloContext.tsx, token: ', body['jwt']);
     return {
       headers: {
         ...headers,

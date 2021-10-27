@@ -11,6 +11,6 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const jwt = await getToken({ req, raw: true });
-  console.log('jwt in server side', jwt);
+  // console.log('from getToken.ts, jwt in server side', jwt);
   res.status(200).json({ jwt });
 }
