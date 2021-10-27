@@ -1,9 +1,6 @@
 
 export default async function addUser(token) {
 
-    // console.log(token)
-
-
     let initialString = JSON.stringify({
         operationName: "InsertUserMutation", query: `mutation AddUser($id: float8, $name: String) { insert_user_one(object: { id: $id, name: $name}) {  id name  } }` , variables: { id: token.sub, name: token.name}
     })
@@ -18,7 +15,6 @@ export default async function addUser(token) {
             'x-hasura-admin-secret': 'password'
         },
 
-        //make sure to serialize your JSON body
         body: initialString
     })
         .then((response) => {

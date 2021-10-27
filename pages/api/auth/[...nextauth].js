@@ -2,7 +2,6 @@ import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import jwt from 'jsonwebtoken';
-import addUser from '../addUser'
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -59,10 +58,7 @@ export default NextAuth({
     // encryption: true,
     // You can define your own encode/decode functions for signing and encryption
     // if you want to override the default behaviour.
-    encode: async ({ secret, token }) => {
-      console.log("Token in jwt is :" + JSON.stringify(token))
-
-      
+    encode: async ({ secret, token }) => {      
       const jwtClaimns = {
         sub: token.sub,
         name: token.name,
@@ -112,8 +108,6 @@ export default NextAuth({
         algorithm: 'HS256',
       });
 
-      console.log( "Token in session is: " + JSON.stringify(session))
-
       session.id = token.id;
       session.token = encodedToken;
 
@@ -126,13 +120,6 @@ export default NextAuth({
       const encodedToken = jwt.sign(token, process.env.SECRET, {
         algorithm: 'HS256',
       });
-
-
-      // Saves the user in the database
-      // console.log("Token is : " + JSON.stringify(token))
-      // console.log("User is :" + JSON.stringify(user))
-      // await addUser(token.sub, token.name)
-      
 
       const isUserSignedIn = user ? true : false;
 

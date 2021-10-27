@@ -7,7 +7,7 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import jwt_decode from 'jwt-decode'
-import addUser from '../pages/api/addUser';
+import addUser from '../util/addUser';
 
 
 function createApolloClient(cache: InMemoryCache) {
@@ -23,9 +23,8 @@ function createApolloClient(cache: InMemoryCache) {
     const body = await token.json();
     const jwt = body['jwt'];
     const decoded = jwt_decode(jwt)
-    addUser(decoded)
-    // console.log("Token from CAC: " +JSON.stringify(decoded))
-    // console.log('from CustomApolloContext.tsx, token: ', body['jwt']);
+    await addUser(decoded)
+    
     return {
       headers: {
         ...headers,
