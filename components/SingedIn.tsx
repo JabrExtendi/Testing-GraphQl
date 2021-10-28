@@ -3,7 +3,6 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 
 
 import Posts from '../components/Posts';
-import addUser from '../util/addUser';
 
 
 export default function SignedIn() {

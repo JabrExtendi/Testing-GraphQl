@@ -6,8 +6,6 @@ import {
   ApolloProvider,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import jwt_decode from 'jwt-decode'
-import addUser from '../util/addUser';
 
 
 function createApolloClient(cache: InMemoryCache) {
@@ -22,8 +20,6 @@ function createApolloClient(cache: InMemoryCache) {
     const token = await fetch('/api/getToken');
     const body = await token.json();
     const jwt = body['jwt'];
-    const decoded = jwt_decode(jwt)
-    await addUser(decoded)
     
     return {
       headers: {
