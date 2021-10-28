@@ -114,14 +114,14 @@ export default NextAuth({
 
       session.finalToken = token.finalToken;
 
+      await addUser(token);
+
       return Promise.resolve(session);
     },
     async jwt({ token, user }) {
       const encodedToken = jwt.sign(token, process.env.SECRET, {
         algorithm: 'HS256',
       });
-
-      await addUser(token);
 
       const isUserSignedIn = user ? true : false;
 
