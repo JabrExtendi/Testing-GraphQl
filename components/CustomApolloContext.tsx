@@ -7,20 +7,18 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
-
 function createApolloClient(cache: InMemoryCache) {
   const graphql_url = `http://localhost:8080/v1/graphql`;
 
   const httpLink = createHttpLink({
     uri: graphql_url,
   });
-  
 
   const authorizationHeaderLink = setContext(async (_, { headers }) => {
     const token = await fetch('/api/getToken');
     const body = await token.json();
     const jwt = body['jwt'];
-    
+
     return {
       headers: {
         ...headers,

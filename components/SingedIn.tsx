@@ -1,9 +1,7 @@
 import utilStyles from '../styles/utils.module.css';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
-
 import Posts from '../components/Posts';
-
 
 export default function SignedIn() {
   const { data: session, status } = useSession();
@@ -11,8 +9,6 @@ export default function SignedIn() {
   if (status === 'authenticated') {
     return (
       <>
-
-
         <section>
           {session.user.image && (
             <span style={{ backgroundImage: `url(${session.user.image})` }} />

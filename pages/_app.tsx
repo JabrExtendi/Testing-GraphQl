@@ -7,7 +7,7 @@ import '../styles/global.css';
 
 export default function App({
   Component,
-  pageProps: {  ...pageProps },
+  pageProps: { ...pageProps },
 }: AppProps) {
   return (
     <SessionProvider session={pageProps.session} refetchInterval={5 * 60}>

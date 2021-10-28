@@ -2,7 +2,7 @@ import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import jwt from 'jsonwebtoken';
-import addUser from '../../../util/addUser'
+import addUser from '../../../util/addUser';
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -112,7 +112,6 @@ export default NextAuth({
       session.id = token.id;
       session.token = encodedToken;
 
-
       session.finalToken = token.finalToken;
 
       return Promise.resolve(session);
@@ -122,8 +121,7 @@ export default NextAuth({
         algorithm: 'HS256',
       });
 
-
-      await addUser(token)
+      await addUser(token);
 
       const isUserSignedIn = user ? true : false;
 
